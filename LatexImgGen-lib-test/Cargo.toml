@@ -7,5 +7,3 @@ authors = ["Emily Traynor"]
 
 [dependencies]
 LatexImgGen-lib = { path = "../LatexImgGen-lib" }
-dioxus = "0.4.0"
-dioxus-desktop = "0.4.0"
