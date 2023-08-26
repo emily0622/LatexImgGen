@@ -1,0 +1,1 @@
+/Users/user/LatexImgRenderer/LatexImgGen-lib/target/debug/libLatexImgGen_lib.rlib: /Users/user/LatexImgRenderer/LatexImgGen-lib/src/LatexImgGen.rs /Users/user/LatexImgRenderer/LatexImgGen-lib/src/lib.rs
