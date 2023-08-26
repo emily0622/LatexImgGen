@@ -1,11 +1,10 @@
 #![allow(non_snake_case)]
-// import the prelude to get access to the `rsx!` macro and the `Scope` and `Element` types
 extern crate mathjax;
 use LatexImgGen::mathjax::MathJax;
 use std::fs;
+use std::path::PathBuf;
 
-
-pub fn render(full_img_name: String, eq_input: String) -> String {
+pub fn render(full_img_name: String, eq_input: String, filepath: Option<&str>, _del_prev: bool) -> String {
     let end_index = full_img_name.len()-4;
     let img_name: String;
     let new_edition_num: i32;
@@ -20,8 +19,14 @@ pub fn render(full_img_name: String, eq_input: String) -> String {
         (new_edition_num,edition_index) = FindEditionNum(full_img_name.clone());
         img_name = full_img_name[0..edition_index].to_string();
     }
+    
+    let (new_full_img_name,prev_img_name) = ProduceImage(new_edition_num, img_name);
+    
+    match filepath {
+        Some(fp) => render_eq_to_path(&eq_input, &new_full_img_name, fp, &prev_img_name),
+        None => render_eq(&eq_input, &new_full_img_name, &prev_img_name),
+    }
 
-    let new_full_img_name = ProduceImage(new_edition_num, eq_input, img_name);
     return new_full_img_name;
  }
 
@@ -29,7 +34,7 @@ pub fn render(full_img_name: String, eq_input: String) -> String {
     let end_index = full_img_name.len()-4;
     let mut edition_index = 0;
     for (i, c) in full_img_name[0..end_index].chars().enumerate() {
-        // [0..-4] to avoid the ".svg" at the end
+        // [0..-4] to avoid the .svg at the end
         // do something with character `c` and index `i`
         // this function isolates the edition number of the image
         // e.g. math2latex_3.svg -> 3 ; robberproblem2_4.svg -> 4
@@ -43,28 +48,40 @@ pub fn render(full_img_name: String, eq_input: String) -> String {
     return (new_edition_num,edition_index);
  }
 
- fn ProduceImage(edition_num: i32, eq_input: String, img_name: String) -> String {
+ fn ProduceImage(edition_num: i32, img_name: String) -> (String,String) {
     let suffix = ".svg";
+    let prev_edition = edition_num - 1;
     let mut full_img_name = img_name.clone().to_owned();
     full_img_name.push_str("_");
     full_img_name.push_str(&edition_num.to_string());
     full_img_name.push_str(suffix);
 
-    let mut prev_img_name: String = "test".to_owned();
-    prev_img_name.push_str(&(edition_num-1).to_string());
+    let mut prev_img_name = img_name.clone().to_owned();
+    prev_img_name.push_str("_");
+    let s: String = prev_edition.to_string();
+    prev_img_name.push_str(&s[..]);
     prev_img_name.push_str(suffix);
-    //render new image
-    render_eq(&eq_input, &full_img_name);
-    let let_ = fs::remove_file(prev_img_name);
-    return full_img_name;
+
+    return (full_img_name,prev_img_name);
 }
 
 
-fn render_eq(input: &str, img_name: &str) {
+fn render_eq(input: &str, img_name: &str, prev_img_name: &str) {
     let renderer = MathJax::new().unwrap();
     let result = renderer.render(input).unwrap();
-    let svg_string = result.into_raw(); // This is a `<svg></svg>` element.
+    let svg_string = result.into_raw(); 
+    let _ = fs::remove_file(prev_img_name);
     std::fs::write(img_name, svg_string).unwrap();
 }
 
+fn render_eq_to_path(input: &str, img_name: &str, filepath: &str, prev_img_name: &str) {
+    let renderer = MathJax::new().unwrap();
+    let result = renderer.render(input).unwrap();
+    let svg_string = result.into_raw();
+    
+    let prev_file_path = PathBuf::from(filepath).join(prev_img_name);
+    let _ = fs::remove_file(prev_file_path);
 
+    let file_path = PathBuf::from(filepath).join(img_name);
+    std::fs::write(&file_path, svg_string).unwrap();
+}
