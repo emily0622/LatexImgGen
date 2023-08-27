@@ -13,7 +13,7 @@ an image called test_0.svg will be generated
 ```
 name = LatexImgGen::render(name,"y=\\frac{2}{x}".to_string(),Some(path),true);
 ```
-// an image called test_1.svg will be generated
+an image called test_1.svg will be generated
 
 
 ### Parameter Inputs
