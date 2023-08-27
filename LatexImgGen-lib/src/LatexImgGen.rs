@@ -23,8 +23,8 @@ pub fn render(full_img_name: String, eq_input: String, filepath: Option<&str>, _
     let (new_full_img_name,prev_img_name) = ProduceImage(new_edition_num, img_name);
     
     match filepath {
-        Some(fp) => render_eq_to_path(&eq_input, &new_full_img_name, fp, &prev_img_name),
-        None => render_eq(&eq_input, &new_full_img_name, &prev_img_name),
+        Some(fp) => render_eq_to_path(&eq_input, &new_full_img_name, fp, &prev_img_name, _del_prev),
+        None => render_eq(&eq_input, &new_full_img_name, &prev_img_name, _del_prev),
     }
 
     return new_full_img_name;
@@ -66,21 +66,25 @@ pub fn render(full_img_name: String, eq_input: String, filepath: Option<&str>, _
 }
 
 
-fn render_eq(input: &str, img_name: &str, prev_img_name: &str) {
+fn render_eq(input: &str, img_name: &str, prev_img_name: &str, _del_prev: bool) {
     let renderer = MathJax::new().unwrap();
     let result = renderer.render(input).unwrap();
     let svg_string = result.into_raw(); 
-    let _ = fs::remove_file(prev_img_name);
+    if _del_prev {
+        let _ = fs::remove_file(prev_img_name);
+    }
     std::fs::write(img_name, svg_string).unwrap();
 }
 
-fn render_eq_to_path(input: &str, img_name: &str, filepath: &str, prev_img_name: &str) {
+fn render_eq_to_path(input: &str, img_name: &str, filepath: &str, prev_img_name: &str, _del_prev: bool) {
     let renderer = MathJax::new().unwrap();
     let result = renderer.render(input).unwrap();
     let svg_string = result.into_raw();
     
-    let prev_file_path = PathBuf::from(filepath).join(prev_img_name);
-    let _ = fs::remove_file(prev_file_path);
+    if _del_prev {
+        let prev_file_path = PathBuf::from(filepath).join(prev_img_name);
+        let _ = fs::remove_file(prev_file_path);
+    }
 
     let file_path = PathBuf::from(filepath).join(img_name);
     std::fs::write(&file_path, svg_string).unwrap();
