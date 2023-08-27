@@ -6,7 +6,7 @@ description = "A rust crate for generating Latex images of equations with an edi
 readme = "README.md"
 repository = "https://github.com/emily0622/LatexImgGen"
 license = "Apache-2.0"
-keywords = ["latex", "image","cache flushing"]
+keywords = ["latex", "image","cache", "flushing"]
 
 [dependencies]
 mathjax = "0.1.1"
