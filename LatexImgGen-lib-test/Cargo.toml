@@ -6,4 +6,4 @@ authors = ["Emily Traynor"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-LatexImgGen-lib = "0.1.0"
+LatexImgGen-lib = { path = "../LatexImgGen-lib" }

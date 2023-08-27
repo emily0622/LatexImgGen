@@ -7,10 +7,3 @@ authors = ["Emily Traynor"]
 
 [dependencies]
 mathjax = "0.1.1"
-
-exclude = [
-    "imgfolder",
-    "LatexImgGen-lib-test",
-    "dioxusTest.rs",
-    "README.md",
-]
